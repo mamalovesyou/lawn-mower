@@ -13,6 +13,7 @@ class Mower:
     def __init__(self, identifier, init_position, init_orientation, instructions):
 
         # Create logger
+        self.id = identifier
         self.name = "Mower-{}".format(identifier)
         self.logger = logging.getLogger(self.name)
 
