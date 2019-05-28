@@ -1,4 +1,4 @@
-from mower import Mower
+from src.mower import Mower
 
 
 class Parser:
@@ -44,15 +44,15 @@ class Parser:
             mowers = fp.readlines()
             for i in range(0, len(mowers), 2):
 
-                initial_position = mowers[i].rstrip()  # Position line
-                instruction = mowers[i+1].rstrip()  # Instruction line
+                initial_position = mowers[i]  # Position line
+                instructions = mowers[i+1]  # Instruction line
 
                 # Extract initital_position and orientation
                 coords, orientation = self._extract_mower_position(
                     initial_position)
 
                 # Creating a new Mower with ID i
-                new_mower = Mower(i, coords, orientation, mowers[i+1].rstrip())
+                new_mower = Mower(i, coords, orientation, instructions)
                 self.mowers.append(new_mower)
 
     def _extract_grid_size(self, size_str):
@@ -61,7 +61,7 @@ class Parser:
         @param size_str: Size of the grid as string. (ex: '5 5')
         @return: Tuple of integer (height, width) or None if parsing error
         """
-        dimensions = size_str.split(' ')
+        dimensions = size_str.rstrip().split(' ')
 
         # Parsing error
         if len(dimensions) != 2:
@@ -82,7 +82,7 @@ class Parser:
         """
 
         # Split string using space char
-        position = position_str.split(' ')
+        position = position_str.rstrip().split(' ')
 
         # Parsing error
         if len(position) != 3:
