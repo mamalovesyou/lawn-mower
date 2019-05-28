@@ -1,6 +1,7 @@
 import logging
 import sys
 
+from environement import Environement
 from mower import Mower
 from gui import App
 
