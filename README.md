@@ -47,7 +47,7 @@ $ pip install -r requirements.txt
 
 # Usage
 
-Before running the programm, you should put your input instrctions in the file called `input.txt`
+Before running the programm, you should put your input instructions in the file called `input.txt` (at the root of the repo)
 Example:
 ```
 5 5
