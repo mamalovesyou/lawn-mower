@@ -30,3 +30,45 @@ FFRFFRFRRF
 This output is expected (final positions of mowers): 
 13N
 51E
+
+
+# Installation
+
+First you need to create a python3 virtual environement and activate it
+```
+$ virtualenv -p python3 venv
+$ source ./venv/bin/activate
+```
+
+Then install all needed dependencies
+```
+$ pip install -r requirements.txt
+```
+
+# Usage
+
+Before running the programm, you should put your input instrctions in the file called `input.txt`
+Example:
+```
+5 5
+1 2 N
+LFLFLFLFF
+3 3 E
+FFRFFRFRRF
+```
+To run the programm as required by th eexercise you can run
+```
+$ python src/main.py
+```
+
+To add logs and see what all steps executed by mowers run
+```
+$ python src/main.py --logs
+```
+
+There is also a GUI interface that required PyQt5 to work but it's a nice to have sometimes
+```
+$ python src/main.py --gui
+```
+And to start the simulation you just have to press the start button. Obviously, the exit button will quit the programm.
+![Alt text](gui.png?raw=true "GUI Screenshot")

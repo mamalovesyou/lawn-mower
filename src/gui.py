@@ -15,7 +15,7 @@ class App(QWidget):
     CELL_HEIGHT = 64
     TITLE = "LAWN MOWER"
 
-    started = pyqtSignal()
+    start = pyqtSignal()
 
     def __init__(self, rows, columns, environement, mowers):
         super().__init__()
@@ -69,7 +69,7 @@ class App(QWidget):
                 self.cells[column, row] = label
 
         start_btn = QPushButton("Start")
-        start_btn.clicked.connect(self.started.emit)
+        start_btn.clicked.connect(self.start.emit)
         exit_btn = QPushButton("Exit")
         exit_btn.clicked.connect(QCoreApplication.instance().quit)
         buttons.addWidget(start_btn)
@@ -103,10 +103,6 @@ class App(QWidget):
         label.clear()
         if pixmap:
             label.setPixmap(pixmap)
-        # else:
-        #     p = label.palette()
-        #     p.setColor(label.backgroundRole(), QColor(2, 179, 2))
-        #     label.setPalette(p)
 
     def redraw(self):
         """
@@ -119,12 +115,3 @@ class App(QWidget):
                 cell = self.environement.get_cell(x1, y1)
                 pixmap = self.create_pixmap(cell)
                 self.update_cell(x, y, pixmap)
-
-    def start(self):
-        self.started.emit()
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    ex = App(6, 6, [])
-    sys.exit(app.exec_())

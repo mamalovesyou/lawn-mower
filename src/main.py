@@ -41,7 +41,7 @@ class Simulation:
 
     def setup_gui(self):
         self.gui = App(self.width, self.height, self.environement, self.mowers)
-        self.gui.started.connect(self.setup_thread)
+        self.gui.start.connect(self.setup_thread)
         return gui
 
     def setup_thread(self):
