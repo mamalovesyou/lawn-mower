@@ -1,107 +1,108 @@
-import tkinter
-import random
+import os
+import sys
+import time
+
+from PyQt5.QtWidgets import QApplication, QLabel, QWidget, QGridLayout
+from PyQt5.QtGui import QIcon, QPixmap
+
+from environement import Environement
 
 
-class App(tkinter.Tk):
+class App(QWidget):
 
-    COLORS = {
-        'MOWED_GRASS': '#7CFC00',
-        'GRASS': '#006400'
-    }
+    CELL_WIDTH = 64
+    CELL_HEIGHT = 64
+    TITLE = "LAWN MOWER"
 
-    def __init__(self, rows, columns, mowers, *args, **kwargs):
-        tkinter.Tk.__init__(self, *args, **kwargs)
+    def __init__(self, rows, columns, environement, mowers):
+        super().__init__()
 
         self.rows = rows
         self.columns = columns
-
-        self.cellwidth = 64
-        self.cellheight = 64
-
-        window_width = (self.columns + 1) * self.cellwidth
-        window_height = (self.rows + 1) * self.cellheight
-
-        self.canvas = tkinter.Canvas(
-            self, width=window_width, height=window_height, borderwidth=0, highlightthickness=0)
-        self.canvas.pack(side="top", fill="both", expand="true")
-
         self.cells = {}
-        self.mowers = {}
+        self.cell_to_image = {}
 
-        for column in range(self.columns + 1):
-            for row in range(self.rows + 1):
-                x1, y1 = self.scale_coordinates(column, row)
-                x2 = x1 + self.cellwidth
-                y2 = y1 + self.cellheight
-                self.cells[row, column] = self.canvas.create_rectangle(
-                    x1, y1, x2, y2, fill=self.COLORS['GRASS'], tags="grass")
+        self.environement = environement
+        self.mowers = mowers
 
-        for m in mowers:
-            x, y = m.current_position
-            print(x, y)
-            new_x, new_y = self.transpose_coordinates(x, y)
-            print(new_x, new_y)
-            self._create_mower(m.id, new_x, new_y)
+        self.setup_images()
+        self.setup_ui()
 
-    def update_mower(self, mower):
+    def setup_images(self):
         """
-        Update mower position on the grid
+        Fucntion that setup the binding between environment cell calue and image
         """
+        src_path = os.path.dirname(os.path.abspath(__file__))
+        self.cell_to_image[Environement.GRASS] = os.path.join(
+            src_path, 'img', 'grass.jpeg')
+        self.cell_to_image[Environement.MOWED_GRASS] = os.path.join(
+            src_path, 'img', 'mowed_grass.jpg')
+        self.cell_to_image[Environement.MOWER_N] = os.path.join(
+            src_path, 'img', 'mower_N.png')
+        self.cell_to_image[Environement.MOWER_E] = os.path.join(
+            src_path, 'img', 'mower_E.png')
+        self.cell_to_image[Environement.MOWER_S] = os.path.join(
+            src_path, 'img', 'mower_S.png')
+        self.cell_to_image[Environement.MOWER_W] = os.path.join(
+            src_path, 'img', 'mower_W.png')
 
-        mower_id = mower.id
-        x, y = mower.current_position
-        row, column = self.transpose_coordinates(x, y)
+    def setup_ui(self):
+        self.setWindowTitle(self.TITLE)
+        self.layout = QGridLayout()
+        self.layout.setContentsMargins(0, 0, 0, 0)
+        self.layout.setSpacing(0)
+        self.layout.setHorizontalSpacing(0)
+        self.layout.setVerticalSpacing(0)
+        self.setLayout(self.layout)
 
-        current_pos = self.mowers[mower_id]['coords']
-        mowed_grass_id = self.cells[current_pos[0], current_pos[1]]
-        self.canvas.itemconfig(mowed_grass_id, tags='mowed_grass')
+        for column in range(self.columns):
+            for row in range(self.rows):
+                # Create widget
+                label = QLabel()
+                pixmap = self.create_pixmap(Environement.GRASS)
+                label.setPixmap(pixmap)
+                self.layout.addWidget(label, row, column)
+                self.cells[row, column] = label
 
-        # mower_cell_id = self.cells[row, column]
-        # self.canvas.itemconfig(mower_cell_id, tags='mowed_grass')
+        self.show()
 
-        x1, y1 = self.scale_coordinates(row, column)
-        x2 = x1 + self.cellwidth
-        y2 = y1 + self.cellheight
-
-        self.canvas.coords(self.mowers[mower_id]
-                           ['canvas'], x1+2, y1+2, x2-2, y2-2)
-
-        self.redraw()
-
-    def _create_mower(self, mower_id, x, y):
-        x1, y1 = self.scale_coordinates(x, y)
-        x2 = x1 + self.cellwidth
-        y2 = y1 + self.cellheight
-        self.mowers[mower_id] = {}
-        self.mowers[mower_id]['canvas'] = self.canvas.create_oval(
-            x1+2, y1+2, x2-2, y2-2, fill="black", tags="mower")
-        self.mowers[mower_id]['coords'] = (x, y)
-
-    def scale_coordinates(self, x, y):
+    def create_pixmap(self, cell_type):
         """
-        This function scale coordinates for the canvas
-        @param x: It will become x * cellWidth
-        @param y: It will become y * cellWidth 
-        @return: Tuple of integer
+        Create a QPixmap from a cell type
+        @param cell_type: Environement.MOWER_[N|E|S|W] | Environement.GRASS | Environement.MOWED_GRASS
+        @return: QPixMap. Scaled at right CELL_WIDTH and CELL_HEIGHT
         """
-        return x * self.cellwidth, y * self.cellheight
+        file_path = self.cell_to_image[cell_type]
+        pixmap = QPixmap(file_path)
+        return pixmap.scaled(self.CELL_WIDTH, self.CELL_HEIGHT)
 
-    def transpose_coordinates(self, x, y):
+    def update_cell(self, x, y, pixmap):
         """
-        This function trnaspose coordiantes from top left origin
-        to a bottom left origin
-        @param x: No change needed
-        @param y: It will be transposed as windowHeight - y 
-        @return: Tuple of integer 
+        Update cell image using a QPixmap widget
         """
-        return x, self.rows - y
+        label = self.cells[x, y]
+        label.clear()
+        label.setPixmap(pixmap)
 
     def redraw(self):
-        self.canvas.itemconfig("grass", fill=self.COLORS['GRASS'])
-        self.canvas.itemconfig("mowed_grass", fill=self.COLORS['MOWED_GRASS'])
-        self.canvas.itemconfig("mower", fill='black')
+        """
+        Redraw all images on grid
+        @param env: Environement
+        """
+        for x in range(self.rows):
+            for y in range(self.columns):
+                cell = self.environement.get_cell(x, y)
+                pixmap = self.create_pixmap(cell)
+                self.update_cell(x, y, pixmap)
+
+    def start(self):
+        for m in self.mowers:
+            for p, o in m:
+                time.sleep(1)
+                self.redraw()
 
 
 if __name__ == "__main__":
-    app = App()
-    app.mainloop()
+    app = QApplication(sys.argv)
+    ex = App(6, 6, [])
+    sys.exit(app.exec_())

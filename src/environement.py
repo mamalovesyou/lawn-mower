@@ -7,7 +7,10 @@ class Environement:
 
     GRASS = 0
     MOWED_GRASS = 1
-    MOWER = 2
+    MOWER_N = 'N'
+    MOWER_E = 'E'
+    MOWER_S = 'S'
+    MOWER_W = 'W'
 
     def __init__(self, width=0, height=0, origin=None):
         self.width = width
