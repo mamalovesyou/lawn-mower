@@ -12,27 +12,32 @@ class Mower:
     ORIENTATIONS = {'N': (0, 1), 'E': (1, 0), 'S': (0, -1), 'W': (-1, 0)}
     INSTRUCTIONS = {'L': -1, 'R': +1, 'F': 0}
 
-    def __init__(self, identifier, init_position, init_orientation, instructions):
+    def __init__(self, id, position, orientation, instructions, environment):
 
         # Create logger
-        self.id = identifier
-        self.name = "Mower-{}".format(identifier)
+        self.id = id
+        self.name = "Mower-{}".format(self.id)
+
         self.logger = logging.getLogger(self.name)
+        # else:
+        #    self.logger = None
 
         self._available_orientations = list(self.ORIENTATIONS.keys())
 
-        self.initial_position = init_position
-        self.initial_orientation = init_orientation
-        self.current_position = init_position
-        self.current_orientation = init_orientation
+        self.current_position = position
+        self.current_orientation = orientation
         self.instructions = instructions
+        self.current_instruction_index = 0
+
+        self.environement = environment
 
     def process(self):
         """
         Implement the logic for the next instruction
         """
         # Dequeue list of instructions
-        self.logger.info("Preparing processing intructions")
+        self.logger.info(
+            "Preparing processing intructions: %s", self.instructions)
         for i in self.instructions:
             self._process_instruction(i)
 
@@ -57,11 +62,19 @@ class Mower:
             index = 0
         new_orientation = self._available_orientations[index]
 
-        self.logger.error("Performing %s instruction. From: (%s, %s) -> To: (%s, %s)",
-                          instruction, self.current_position, self.current_orientation,
-                          self.current_position, new_orientation)
+        self.logger.info("Performing %s instruction. From: (%s, %s) -> To: (%s, %s)",
+                         instruction, self.current_position, self.current_orientation,
+                         self.current_position, new_orientation)
 
         self.current_orientation = self._available_orientations[index]
+
+    def _is_valid_move(self, position_to_move):
+        """
+        Return true is the position to move is valid, False either
+        @param position_to_move: tuple(int, int)
+        @return: True or False
+        """
+        return self.environement.is_in_field(*position_to_move)
 
     def _process_instruction_forward(self):
         """
@@ -70,8 +83,13 @@ class Mower:
         coords_increment = self.ORIENTATIONS[self.current_orientation]
         new_position = tuple(
             map(operator.add, self.current_position, coords_increment))
-        self.current_position = new_position
-        self.logger.error("Performing F (Forward) instruction. From: (%s, %s) -> To: (%s, %s)",
-                          self.current_position, self.current_orientation,
-                          new_position, self.current_orientation)
-        self.current_position = new_position
+
+        if self._is_valid_move(new_position):
+            self.current_position = new_position
+            self.logger.info("Performing F (Forward) instruction. From: (%s, %s) -> To: (%s, %s)",
+                             self.current_position, self.current_orientation,
+                             new_position, self.current_orientation)
+            self.current_position = new_position
+        else:
+            self.logger.info(
+                "Skipping F instruction. %s is out of field.", new_position)

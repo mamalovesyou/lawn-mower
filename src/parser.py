@@ -1,5 +1,3 @@
-from src.mower import Mower
-
 
 class Parser:
     """
@@ -12,18 +10,11 @@ class Parser:
         - Mower's instructions
     """
 
-    DEFAULT_INPUT_FILE_PATH = "../input.txt"
-
     def __init__(self, input_file=None):
         """
         Consutructor method that initialized parser
         """
-
-        if input_file:
-            self._input_file = input_file
-        else:
-            self._input_file = self.DEFAULT_INPUT_FILE_PATH
-
+        self._input_file = input_file
         self.grid_size = (None, None)  # (width, height)
         self.mowers = []
 
@@ -50,9 +41,8 @@ class Parser:
                 # Extract initital_position and orientation
                 coords, orientation = self._extract_mower_position(
                     initial_position)
-
-                # Creating a new Mower with ID i
-                new_mower = Mower(i, coords, orientation, instructions)
+                new_mower = {'id': i, 'position': coords, 'orientation': orientation,
+                             'instructions': instructions}
                 self.mowers.append(new_mower)
 
     def _extract_grid_size(self, size_str):
