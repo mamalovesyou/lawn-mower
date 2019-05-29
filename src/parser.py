@@ -13,6 +13,7 @@ class Parser:
     def __init__(self, input_file=None):
         """
         Consutructor method that initialized parser
+        @param input_file: string. path to the file that hold mowers instructions
         """
         self._input_file = input_file
         self.grid_size = (None, None)  # (width, height)

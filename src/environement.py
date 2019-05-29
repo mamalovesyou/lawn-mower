@@ -1,6 +1,7 @@
 class Environement:
     """
-    Origin is BOTTOM-LEFT so to update a cell you alwas need to
+    The Environement class is designed to handle the field for mowers.
+    /!\ Origin is BOTTOM-LEFT so to update a cell you alwas need to
     use update_cell() function because it implement the right logic.
     """
     DEFAULT_ORIGIN = (0, 0)
@@ -24,7 +25,8 @@ class Environement:
 
     def __str__(self):
         """
-        String representation of an evironement
+        String representation of an environement
+        @return: string
         """
         result = ""
         for row in self._cells:

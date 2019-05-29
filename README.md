@@ -70,5 +70,9 @@ There is also a GUI interface that required PyQt5 to work but it's a nice to hav
 ```
 $ python src/main.py --gui
 ```
-And to start the simulation you just have to press the start button. Obviously, the exit button will quit the programm.
+
+And to start the simulation you just have to press the start button. 
+Obviously, the exit button will quit the programm.
+
+
 ![Alt text](gui.png?raw=true "GUI Screenshot")

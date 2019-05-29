@@ -10,6 +10,9 @@ from environement import Environement
 
 
 class App(QWidget):
+    """
+    The App class hold all the logic needed to have a GUI for the simulation
+    """
 
     CELL_WIDTH = 64
     CELL_HEIGHT = 64
@@ -49,6 +52,9 @@ class App(QWidget):
             src_path, 'img', 'mower_W.png')
 
     def setup_ui(self):
+        """
+        Setup all the widget we need
+        """
         self.setWindowTitle(self.TITLE)
         self.setAutoFillBackground(True)
         layout = QVBoxLayout()
@@ -98,6 +104,10 @@ class App(QWidget):
     def update_cell(self, x, y, pixmap):
         """
         Update cell image using a QPixmap widget
+        @param x: Integer - X coordinate
+        @param y: Integer - Y coordinate
+        @param pixmap: QPixmap the image we want to put in the cell
+
         """
         label = self.cells[x, y]
         label.clear()

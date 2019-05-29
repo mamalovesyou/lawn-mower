@@ -7,6 +7,8 @@ from collections import deque
 class Mower:
     """
     Mower class
+    Mower is implemented as an iterator. So it's very easy to iterate through his intructions.
+    You can bacically used it like a list which at each step will alterate his environment.
     """
 
     ORIENTATIONS = {'N': (0, 1), 'E': (1, 0), 'S': (0, -1), 'W': (-1, 0)}
@@ -50,7 +52,8 @@ class Mower:
 
     def _process_instruction(self, instruction):
         """
-        Process instruction
+        Process instruction on the environement
+        @param instruction: string - Could be L, R, or F
         """
         if instruction not in self.INSTRUCTIONS.keys():
             if self.logs:
@@ -91,7 +94,8 @@ class Mower:
 
     def _process_instruction_forward(self):
         """
-        Process forward instructions
+        Process forward instruction. That mean it will move the mower on 
+        the field following its orientation
         """
         coords_increment = self.ORIENTATIONS[self.current_orientation]
         new_position = tuple(
