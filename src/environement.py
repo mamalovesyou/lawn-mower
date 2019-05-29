@@ -40,7 +40,7 @@ class Environement:
         @param value: Integer
         @return: True if updated, False either
         """
-        x1, y1 = self._transpose_coordinates(x, y)
+        x1, y1 = self.transpose_coordinates(x, y)
         if self.is_in_field(x1, y1):
             self._cells[y1][x1] = value
             return True
@@ -53,7 +53,7 @@ class Environement:
         @param y: Integer
         @return: Integer
         """
-        x1, y1 = self._transpose_coordinates(x, y)
+        x1, y1 = self.transpose_coordinates(x, y)
         if self.is_in_field(x1, y1):
             return self._cells[y1][x1]
         return None
@@ -66,7 +66,7 @@ class Environement:
         """
         return (self.origin_x <= x < self.width) and (self.origin_y <= y < self.height)
 
-    def _transpose_coordinates(self, x, y):
+    def transpose_coordinates(self, x, y):
         """
         This function trnaspose coordiantes from top left origin
         to a bottom left origin. It will transpose y as gridHeigh - y.

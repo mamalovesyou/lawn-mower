@@ -31,6 +31,10 @@ class Mower:
 
         self.environement = environment
 
+        # Update environement
+        self.environement.update_cell(
+            *self.current_position, self.current_orientation)
+
     def __iter__(self):
         """
         Implement mower's logic as an iterator.
@@ -73,6 +77,10 @@ class Mower:
 
         self.current_orientation = self._available_orientations[index]
 
+        # Update environement
+        self.environement.update_cell(
+            *self.current_position, self.current_orientation)
+
     def _is_valid_move(self, position_to_move):
         """
         Return true is the position to move is valid, False either
@@ -90,7 +98,10 @@ class Mower:
             map(operator.add, self.current_position, coords_increment))
 
         if self._is_valid_move(new_position):
-            self.current_position = new_position
+
+            old_position = self.current_position  # Buffer old position
+            self.current_position = new_position  # Update mower's position
+
             if self.logs:
                 self.logger.info("Performing F (Forward) instruction. From: (%s, %s) -> To: (%s, %s)",
                                  self.current_position, self.current_orientation,
@@ -98,6 +109,9 @@ class Mower:
             self.current_position = new_position
 
             # Update environement
+            self.environement.update_cell(
+                *old_position, self.environement.MOWED_GRASS)
+
             self.environement.update_cell(
                 *new_position, self.current_orientation)
         else:

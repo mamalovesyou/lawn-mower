@@ -1,9 +1,11 @@
 import logging
+import time
 import sys
 
 from gui import App
 from mower import Mower
 from parser import Parser
+from threading import Thread
 from environement import Environement
 
 from PyQt5.QtWidgets import QApplication
@@ -16,7 +18,7 @@ class Simulation:
     def __init__(self, input_file, logs=False, gui=False):
 
         self.logs = logs
-        self.gui = gui
+        self.gui = False
 
         self.parser = Parser(input_file)
 
@@ -37,19 +39,22 @@ class Simulation:
                 **mower_dict, environment=self.environement, logs=self.logs)
             self.mowers.append(new_mower)
 
+    def setup_gui(self):
+        self.gui = App(self.width, self.height, self.environement, self.mowers)
+        self.gui.started.connect(self.setup_thread)
+        return gui
+
+    def setup_thread(self):
+        thread = Thread(target=self.run)
+        thread.start()
+
     def run(self):
-
-        if self.gui:
-            app = QApplication(sys.argv)
-            ex = App(self.width, self.height, self.environement, self.mowers)
-            ex.start()
-            sys.exit(app.exec_())
-
-        else:
-            for m in self.mowers:
-                for p, o in m:
-                    pass
-                print(p, o)
+        for m in self.mowers:
+            for p, o in m:
+                if self.gui:
+                    time.sleep(0.2)
+                    self.gui.redraw()
+            print(p, o)
 
 
 if __name__ == '__main__':
@@ -67,5 +72,12 @@ if __name__ == '__main__':
         if arg in ['--gui']:
             gui = True
 
-    simulation = Simulation(DEFAULT_INPUT_FILE_PATH, logs=logs, gui=gui)
-    simulation.run()
+    simulation = Simulation(DEFAULT_INPUT_FILE_PATH, logs=logs)
+
+    if gui:
+        app = QApplication(sys.argv)
+        widget = simulation.setup_gui()
+        sys.exit(app.exec_())
+
+    else:
+        simulation.run()

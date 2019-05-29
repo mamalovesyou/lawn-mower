@@ -2,8 +2,9 @@ import os
 import sys
 import time
 
-from PyQt5.QtWidgets import QApplication, QLabel, QWidget, QGridLayout
-from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtWidgets import QApplication, QLabel, QWidget, QGridLayout, QVBoxLayout, QHBoxLayout, QPushButton
+from PyQt5.QtGui import QIcon, QPixmap, QColor
+from PyQt5.QtCore import QCoreApplication, pyqtSignal
 
 from environement import Environement
 
@@ -13,6 +14,8 @@ class App(QWidget):
     CELL_WIDTH = 64
     CELL_HEIGHT = 64
     TITLE = "LAWN MOWER"
+
+    started = pyqtSignal()
 
     def __init__(self, rows, columns, environement, mowers):
         super().__init__()
@@ -35,8 +38,7 @@ class App(QWidget):
         src_path = os.path.dirname(os.path.abspath(__file__))
         self.cell_to_image[Environement.GRASS] = os.path.join(
             src_path, 'img', 'grass.jpeg')
-        self.cell_to_image[Environement.MOWED_GRASS] = os.path.join(
-            src_path, 'img', 'mowed_grass.jpg')
+        self.cell_to_image[Environement.MOWED_GRASS] = None
         self.cell_to_image[Environement.MOWER_N] = os.path.join(
             src_path, 'img', 'mower_N.png')
         self.cell_to_image[Environement.MOWER_E] = os.path.join(
@@ -48,33 +50,50 @@ class App(QWidget):
 
     def setup_ui(self):
         self.setWindowTitle(self.TITLE)
-        self.layout = QGridLayout()
-        self.layout.setContentsMargins(0, 0, 0, 0)
-        self.layout.setSpacing(0)
-        self.layout.setHorizontalSpacing(0)
-        self.layout.setVerticalSpacing(0)
-        self.setLayout(self.layout)
+        self.setAutoFillBackground(True)
+        layout = QVBoxLayout()
+        grid = QGridLayout()
+        grid.setContentsMargins(0, 0, 0, 0)
+        grid.setSpacing(0)
+        grid.setHorizontalSpacing(0)
+        grid.setVerticalSpacing(0)
+        buttons = QHBoxLayout()
 
         for column in range(self.columns):
             for row in range(self.rows):
                 # Create widget
                 label = QLabel()
-                pixmap = self.create_pixmap(Environement.GRASS)
-                label.setPixmap(pixmap)
-                self.layout.addWidget(label, row, column)
-                self.cells[row, column] = label
+                label.setStyleSheet(
+                    "QLabel { background-color : rgb(2,179,2); }")
+                grid.addWidget(label, row, column)
+                self.cells[column, row] = label
 
+        start_btn = QPushButton("Start")
+        start_btn.clicked.connect(self.started.emit)
+        exit_btn = QPushButton("Exit")
+        exit_btn.clicked.connect(QCoreApplication.instance().quit)
+        buttons.addWidget(start_btn)
+        buttons.addWidget(exit_btn)
+
+        layout.addLayout(grid)
+        layout.addLayout(buttons)
+
+        self.setLayout(layout)
+
+        self.redraw()
         self.show()
 
     def create_pixmap(self, cell_type):
         """
         Create a QPixmap from a cell type
         @param cell_type: Environement.MOWER_[N|E|S|W] | Environement.GRASS | Environement.MOWED_GRASS
-        @return: QPixMap. Scaled at right CELL_WIDTH and CELL_HEIGHT
+        @return: QPixMap. Scaled at right CELL_WIDTH and CELL_HEIGHT or None
         """
         file_path = self.cell_to_image[cell_type]
-        pixmap = QPixmap(file_path)
-        return pixmap.scaled(self.CELL_WIDTH, self.CELL_HEIGHT)
+        if file_path:
+            pixmap = QPixmap(file_path)
+            return pixmap.scaled(self.CELL_WIDTH, self.CELL_HEIGHT)
+        return None
 
     def update_cell(self, x, y, pixmap):
         """
@@ -82,24 +101,27 @@ class App(QWidget):
         """
         label = self.cells[x, y]
         label.clear()
-        label.setPixmap(pixmap)
+        if pixmap:
+            label.setPixmap(pixmap)
+        # else:
+        #     p = label.palette()
+        #     p.setColor(label.backgroundRole(), QColor(2, 179, 2))
+        #     label.setPalette(p)
 
     def redraw(self):
         """
         Redraw all images on grid
         @param env: Environement
         """
-        for x in range(self.rows):
-            for y in range(self.columns):
-                cell = self.environement.get_cell(x, y)
+        for x in range(self.columns):
+            for y in range(self.rows):
+                x1, y1 = self.environement.transpose_coordinates(x, y)
+                cell = self.environement.get_cell(x1, y1)
                 pixmap = self.create_pixmap(cell)
                 self.update_cell(x, y, pixmap)
 
     def start(self):
-        for m in self.mowers:
-            for p, o in m:
-                time.sleep(1)
-                self.redraw()
+        self.started.emit()
 
 
 if __name__ == "__main__":
