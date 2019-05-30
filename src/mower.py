@@ -14,7 +14,7 @@ class Mower:
     ORIENTATIONS = {'N': (0, 1), 'E': (1, 0), 'S': (0, -1), 'W': (-1, 0)}
     INSTRUCTIONS = {'L': -1, 'R': +1, 'F': 0}
 
-    def __init__(self, id, position, orientation, instructions, environment, logs):
+    def __init__(self, id, position, orientation, instructions, environment, logs=False):
 
         # Create logger
         self.id = id
@@ -31,10 +31,10 @@ class Mower:
         self.instructions = instructions
         self.current_instruction_index = 0
 
-        self.environement = environment
+        self.environment = environment
 
-        # Update environement
-        self.environement.update_cell(
+        # Update environment
+        self.environment.update_cell(
             *self.current_position, self.current_orientation)
 
     def __iter__(self):
@@ -50,9 +50,18 @@ class Mower:
             self.current_instruction_index += 1
             yield self.current_position, self.current_orientation
 
+    def get_current_instruction(self):
+        """
+        Return current instruction value
+        @return: string or None
+        """
+        if self.current_instruction_index < len(self.instructions):
+            return self.instructions[self.current_instruction_index]
+        return None
+
     def _process_instruction(self, instruction):
         """
-        Process instruction on the environement
+        Process instruction on the environment
         @param instruction: string - Could be L, R, or F
         """
         if instruction not in self.INSTRUCTIONS.keys():
@@ -80,8 +89,8 @@ class Mower:
 
         self.current_orientation = self._available_orientations[index]
 
-        # Update environement
-        self.environement.update_cell(
+        # Update environment
+        self.environment.update_cell(
             *self.current_position, self.current_orientation)
 
     def _is_valid_move(self, position_to_move):
@@ -90,7 +99,7 @@ class Mower:
         @param position_to_move: tuple(int, int)
         @return: True or False
         """
-        return self.environement.is_in_field(*position_to_move)
+        return self.environment.is_in_field(*position_to_move)
 
     def _process_instruction_forward(self):
         """
@@ -112,11 +121,11 @@ class Mower:
                                  new_position, self.current_orientation)
             self.current_position = new_position
 
-            # Update environement
-            self.environement.update_cell(
-                *old_position, self.environement.MOWED_GRASS)
+            # Update environment
+            self.environment.update_cell(
+                *old_position, self.environment.MOWED_GRASS)
 
-            self.environement.update_cell(
+            self.environment.update_cell(
                 *new_position, self.current_orientation)
         else:
             if self.logs:

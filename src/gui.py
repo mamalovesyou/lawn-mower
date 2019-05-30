@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import QApplication, QLabel, QWidget, QGridLayout, QVBoxLay
 from PyQt5.QtGui import QIcon, QPixmap, QColor
 from PyQt5.QtCore import QCoreApplication, pyqtSignal
 
-from environement import Environement
+from environment import Environment
 
 
 class App(QWidget):
@@ -20,7 +20,7 @@ class App(QWidget):
 
     start = pyqtSignal()
 
-    def __init__(self, rows, columns, environement, mowers):
+    def __init__(self, rows, columns, environment, mowers):
         super().__init__()
 
         self.rows = rows
@@ -28,7 +28,7 @@ class App(QWidget):
         self.cells = {}
         self.cell_to_image = {}
 
-        self.environement = environement
+        self.environment = environment
         self.mowers = mowers
 
         self.setup_images()
@@ -39,16 +39,16 @@ class App(QWidget):
         Fucntion that setup the binding between environment cell calue and image
         """
         src_path = os.path.dirname(os.path.abspath(__file__))
-        self.cell_to_image[Environement.GRASS] = os.path.join(
+        self.cell_to_image[Environment.GRASS] = os.path.join(
             src_path, 'img', 'grass.jpeg')
-        self.cell_to_image[Environement.MOWED_GRASS] = None
-        self.cell_to_image[Environement.MOWER_N] = os.path.join(
+        self.cell_to_image[Environment.MOWED_GRASS] = None
+        self.cell_to_image[Environment.MOWER_N] = os.path.join(
             src_path, 'img', 'mower_N.png')
-        self.cell_to_image[Environement.MOWER_E] = os.path.join(
+        self.cell_to_image[Environment.MOWER_E] = os.path.join(
             src_path, 'img', 'mower_E.png')
-        self.cell_to_image[Environement.MOWER_S] = os.path.join(
+        self.cell_to_image[Environment.MOWER_S] = os.path.join(
             src_path, 'img', 'mower_S.png')
-        self.cell_to_image[Environement.MOWER_W] = os.path.join(
+        self.cell_to_image[Environment.MOWER_W] = os.path.join(
             src_path, 'img', 'mower_W.png')
 
     def setup_ui(self):
@@ -92,7 +92,7 @@ class App(QWidget):
     def create_pixmap(self, cell_type):
         """
         Create a QPixmap from a cell type
-        @param cell_type: Environement.MOWER_[N|E|S|W] | Environement.GRASS | Environement.MOWED_GRASS
+        @param cell_type: Environment.MOWER_[N|E|S|W] | Environment.GRASS | Environment.MOWED_GRASS
         @return: QPixMap. Scaled at right CELL_WIDTH and CELL_HEIGHT or None
         """
         file_path = self.cell_to_image[cell_type]
@@ -117,11 +117,11 @@ class App(QWidget):
     def redraw(self):
         """
         Redraw all images on grid
-        @param env: Environement
+        @param env: Environment
         """
         for x in range(self.columns):
             for y in range(self.rows):
-                x1, y1 = self.environement.transpose_coordinates(x, y)
-                cell = self.environement.get_cell(x1, y1)
+                x1, y1 = self.environment.transpose_coordinates(x, y)
+                cell = self.environment.get_cell(x1, y1)
                 pixmap = self.create_pixmap(cell)
                 self.update_cell(x, y, pixmap)

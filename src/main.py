@@ -6,7 +6,7 @@ from gui import App
 from mower import Mower
 from parser import Parser
 from threading import Thread
-from environement import Environement
+from environment import Environment
 
 from PyQt5.QtWidgets import QApplication
 
@@ -25,7 +25,7 @@ class Simulation:
 
         self.parser = Parser(input_file)
 
-        self.environement = None
+        self.environment = None
         self.mowers = []
 
         self._setup()
@@ -33,16 +33,16 @@ class Simulation:
     def _setup(self):
         """
         Parse info and instructions using the Parser.
-        Create the environement and the mowers
+        Create the environment and the mowers
         """
         self.parser.parse()
         self.width, self.height = self.parser.grid_size
-        self.environement = Environement(self.width, self.height)
+        self.environment = Environment(self.width, self.height)
 
         # Creating mowers
         for mower_dict in self.parser.mowers:
             new_mower = Mower(
-                **mower_dict, environment=self.environement, logs=self.logs)
+                **mower_dict, environment=self.environment, logs=self.logs)
             self.mowers.append(new_mower)
 
     def setup_gui(self):
@@ -50,7 +50,7 @@ class Simulation:
         Create the GUI application and connect its start signal to the thread creation
         @return: QWidget. Widget that hold the field and buttons to play with simulation
         """
-        self.gui = App(self.width, self.height, self.environement, self.mowers)
+        self.gui = App(self.width, self.height, self.environment, self.mowers)
         self.gui.start.connect(self.setup_thread)
         return gui
 

@@ -1,4 +1,4 @@
-from src.environement import Environement
+from src.environment import Environment
 
 
 class TestEnviroment(object):
@@ -36,17 +36,13 @@ class TestEnviroment(object):
     # Enviroment size (4, 4)
     STRING_REP = "0 0 0 0\n0 0 0 0\n0 0 0 0\n0 0 0 0\n"
 
-    def createEnv(self, size):
-        width, height = size
-        return Environement(width, height)
-
     def test_initialization(self):
         """
         Test initialization. This test verify that after initialization
         the enviroement is composed of a grid of 0 with the right size
         """
         for k, v in self.GRIDS.items():
-            env = self.createEnv(k)
+            env = Environment(*k)
             assert env._cells == v
 
     def test_transpose_coordinates(self):
@@ -55,17 +51,17 @@ class TestEnviroment(object):
         a bottom left origin
         """
         environement_size = (10, 10)
-        env = self.createEnv(environement_size)
+        env = Environment(*environement_size)
         for k, v in self.TRANSPOSED_COORDS.items():
             x, y = k
-            assert env._transpose_coordinates(x, y) == v
+            assert env.transpose_coordinates(x, y) == v
 
     def test_is_in_field(self):
         """
         Test is in field
         """
         environement_size = (10, 10)
-        env = self.createEnv(environement_size)
+        env = Environment(*environement_size)
         for k, v in self.IN_FIELD.items():
             x, y = k
             assert env.is_in_field(x, y) == v
@@ -75,7 +71,7 @@ class TestEnviroment(object):
         Test update cell
         """
         environement_size = (10, 10)
-        env = self.createEnv(environement_size)
+        env = Environment(*environement_size)
         for k, v in self.UPDATE_CELLS.items():
             x, y = k
             print(x, y)
@@ -92,7 +88,7 @@ class TestEnviroment(object):
         Test get cell
         """
         environement_size = (10, 10)
-        env = self.createEnv(environement_size)
+        env = Environment(*environement_size)
         for row in range(environement_size[1]):
             for column in range(environement_size[0]):
                 assert env.get_cell(column, row) == env.GRASS
@@ -102,5 +98,5 @@ class TestEnviroment(object):
         Test string representation of an environement
         """
         environement_size = (4, 4)
-        env = self.createEnv(environement_size)
+        env = Environment(*environement_size)
         assert str(env) == self.STRING_REP

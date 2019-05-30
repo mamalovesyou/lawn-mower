@@ -1,6 +1,6 @@
-class Environement:
+class Environment:
     """
-    The Environement class is designed to handle the field for mowers.
+    The Environment class is designed to handle the field for mowers.
     /!\ Origin is BOTTOM-LEFT so to update a cell you alwas need to
     use update_cell() function because it implement the right logic.
     """
@@ -25,7 +25,7 @@ class Environement:
 
     def __str__(self):
         """
-        String representation of an environement
+        String representation of an environment
         @return: string
         """
         result = ""
@@ -81,7 +81,7 @@ class Environement:
 
 if __name__ == '__main__':
 
-    field = Environement(6, 6)
+    field = Environment(6, 6)
     field.update_cell(1, 2, field.MOWER)
     field.update_cell(3, 3, field.MOWER)
     print(field.is_in_field(0, 0))
