@@ -34,6 +34,8 @@ This output is expected (final positions of mowers):
 
 # Installation
 
+Note: This code was etsted using `Python 3.7`
+
 First you need to create a python3 virtual environement and activate it
 ```
 $ virtualenv -p python3 venv
@@ -43,6 +45,14 @@ $ source ./venv/bin/activate
 Then install all needed dependencies
 ```
 $ pip install -r requirements.txt
+```
+
+# Running tests
+
+To run units t`sts, just go at root of the repo and run
+Use option `-v` to get a vcerbose result
+```
+$ pytest src 
 ```
 
 # Usage

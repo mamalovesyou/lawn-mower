@@ -12,6 +12,14 @@ class TestMower(object):
     INSTRUCTIONS_LIST = {
         "FFFFFRFR": {'results': [((0, 1), 'N'), ((0, 2), 'N'), ((0, 3), 'N'), ((0, 4), 'N'), ((0, 5), 'N'), ((0, 5), 'E'), ((1, 5), 'E'), ((1, 5), 'S')],
                      'environment': "1 S 0 0 0 0\n1 0 0 0 0 0\n1 0 0 0 0 0\n1 0 0 0 0 0\n1 0 0 0 0 0\n1 0 0 0 0 0\n"},
+
+        # Test case where instructions are to go out of boudaries
+        "FFFRFFFFFF": {'results': [((0, 1), 'N'), ((0, 2), 'N'), ((0, 3), 'N'), ((0, 3), 'E'), ((1, 3), 'E'), ((2, 3), 'E'), ((3, 3), 'E'), ((4, 3), 'E'), ((5, 3), 'E'), ((5, 3), 'E')],
+                       'environment': "0 0 0 0 0 0\n0 0 0 0 0 0\n1 1 1 1 1 E\n1 0 0 0 0 0\n1 0 0 0 0 0\n1 0 0 0 0 0\n"},
+
+        # Test with false instructions
+        "FFBFFAF": {'results': [((0, 1), 'N'), ((0, 2), 'N'), ((0, 2), 'N'), ((0, 3), 'N'), ((0, 4), 'N'), ((0, 4), 'N'), ((0, 5), 'N')],
+                    'environment': "N 0 0 0 0 0\n1 0 0 0 0 0\n1 0 0 0 0 0\n1 0 0 0 0 0\n1 0 0 0 0 0\n1 0 0 0 0 0\n"},
     }
 
     @pytest.fixture()
