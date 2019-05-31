@@ -73,7 +73,9 @@ class Simulation:
                 if self.gui:
                     time.sleep(0.2)
                     self.gui.redraw()
-            print(p, o)
+
+            # Print output
+            print("{} {} {}".format(*p, o))
 
 
 # Entrypoint
